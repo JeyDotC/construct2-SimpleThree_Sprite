@@ -147,9 +147,11 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
     instanceProto.updatePivot = function () {
         const currentFrame = this.inst.curFrame || {hotspotX: 0, hotspotY: 0};
+        const {scaleX, scaleY} = this.getCurrentScale();
+
         this.pivot.position.set(
-            this.pixelsTo3DUnits(this.inst.x + (currentFrame.hotspotX - 0.5) * currentFrame.width),
-            this.pixelsTo3DUnits(this.elevation + (currentFrame.hotspotY - 0.5) * currentFrame.height),
+            this.pixelsTo3DUnits(this.inst.x + (currentFrame.hotspotX - 0.5) * currentFrame.width * scaleX),
+            this.pixelsTo3DUnits(this.elevation + (currentFrame.hotspotY - 0.5) * currentFrame.height * scaleY),
             this.pixelsTo3DUnits(this.inst.y)
         );
 
@@ -204,8 +206,7 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
             return;
         }
 
-        const scaleX = Math.abs(this.inst.width / currentFrame.width);
-        const scaleY = Math.abs(this.inst.height / currentFrame.height);
+        const {scaleX, scaleY} = this.getCurrentScale();
 
         const newWidth3D = this.pixelsTo3DUnits(currentFrame.width * scaleX);
         const newHeight3D = this.pixelsTo3DUnits(currentFrame.height * scaleY);
@@ -244,6 +245,14 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
         this.currentMaterial.map.center.y = 1;
     };
 
+    instanceProto.getCurrentScale = function () {
+        const currentFrame = this.inst.curFrame || { width: this.inst.width, height: this.inst.height };
+
+        return {
+            scaleX: Math.abs(this.inst.width / currentFrame.width),
+            scaleY: Math.abs(this.inst.height / currentFrame.height),
+        }
+    };
 
     instanceProto.onDestroy = function () {
         // called when associated object is being destroyed
