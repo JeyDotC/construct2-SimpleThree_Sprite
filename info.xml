@@ -4,9 +4,9 @@
 	<type>behavior</type>
 	
 	<name>SimpleThree_Sprite</name>
-	<version>1.0.1</version>
+	<version>1.0</version>
 	<author>JeyDotC</author>
 	<website>https://github.com/JeyDotC/construct2-SimpleThree_Sprite</website>
 	<documentation>https://github.com/JeyDotC/construct2-SimpleThree_Sprite</documentation>
-	<description>Applies a Name and/or a series of tags to an object and allows to pick those object by Name or Tag. This behavior is thought to resemble the HTML/CSS idea of ids and classes, where you can pick an individual element by Id, but multiple elements by one of its multiple classes.</description>
+	<description>Converts a regular sprite into a 3D plane.</description>
 </c2addon>
