@@ -31,20 +31,30 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
         No: 0,
         Yes: 1,
         OnlyYAxis: 2,
-        asString(value){
-            switch (value){
-                case FacingCameraMode.No: return 'No';
-                case FacingCameraMode.Yes: return 'Yes';
-                case FacingCameraMode.OnlyYAxis: return 'Only Y Axis';
-                default: return 'UNKNOWN';
+        asString(value) {
+            switch (value) {
+                case FacingCameraMode.No:
+                    return 'No';
+                case FacingCameraMode.Yes:
+                    return 'Yes';
+                case FacingCameraMode.OnlyYAxis:
+                    return 'Only Y Axis';
+                default:
+                    return 'UNKNOWN';
             }
         },
         fromString(value) {
-            switch (value){
-                case 'No': return FacingCameraMode.No;
-                case 'Yes': return FacingCameraMode.Yes;
-                case 'Only Y Axis':case 'y': case 'Y': return FacingCameraMode.OnlyYAxis;
-                default: return FacingCameraMode.No;
+            switch (value) {
+                case 'No':
+                    return FacingCameraMode.No;
+                case 'Yes':
+                    return FacingCameraMode.Yes;
+                case 'Only Y Axis':
+                case 'y':
+                case 'Y':
+                    return FacingCameraMode.OnlyYAxis;
+                default:
+                    return FacingCameraMode.No;
             }
         }
     };
@@ -95,6 +105,7 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
 
     instanceProto.onCreate = function () {
+        console.log(this.inst);
         this.elevation = this.properties[0];
         this.rotationX = cr.to_radians(this.properties[1]);
         this.rotationZ = cr.to_radians(this.properties[2]);
@@ -113,7 +124,6 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
         if (this.type.allTextures.length === 0) {
             this.type.allTextures = this.inst.type.all_frames.reduce((prev, frame) => {
-                console.log(frame);
                 return {
                     ...prev,
                     [frame.texture_file]: {
@@ -145,7 +155,7 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
         if (this.facingCamera && this.simpleThree && this.simpleThree.camera) {
             this.pivot.lookAt(this.simpleThree.camera.position);
-            if(this.facingCamera === FacingCameraMode.OnlyYAxis){
+            if (this.facingCamera === FacingCameraMode.OnlyYAxis) {
                 this.pivot.rotation.x = -this.rotationX;
                 this.pivot.rotation.z = -this.rotationZ;
             }
@@ -188,8 +198,17 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
             this.currentTexture = this.type.allTextures[currentFrame.texture_file];
         }
 
-        const newWidth3D = this.pixelsTo3DUnits(currentFrame.width);
-        const newHeight3D = this.pixelsTo3DUnits(currentFrame.height);
+        const currentTextureImage = this.currentTexture.texture.image;
+
+        if (currentTextureImage === undefined) {
+            return;
+        }
+
+        const scaleX = Math.abs(this.inst.width / currentFrame.width);
+        const scaleY = Math.abs(this.inst.height / currentFrame.height);
+
+        const newWidth3D = this.pixelsTo3DUnits(currentFrame.width * scaleX);
+        const newHeight3D = this.pixelsTo3DUnits(currentFrame.height * scaleY);
 
         if (!this.currentGeometry) {
             this.currentGeometry = new THREE.PlaneGeometry(newWidth3D, newHeight3D);
@@ -215,11 +234,11 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
             this.currentMaterial.needsUpdate = true;
         }
 
-        this.currentMaterial.map.offset.x = currentFrame.offx / this.currentTexture.texture.image.width;
-        this.currentMaterial.map.offset.y = currentFrame.offy / this.currentTexture.texture.image.height;
+        this.currentMaterial.map.offset.x = currentFrame.offx / currentTextureImage.width;
+        this.currentMaterial.map.offset.y = currentFrame.offy / currentTextureImage.height;
 
-        this.currentMaterial.map.repeat.x = currentFrame.width / this.currentTexture.texture.image.width;
-        this.currentMaterial.map.repeat.y = currentFrame.height / this.currentTexture.texture.image.height;
+        this.currentMaterial.map.repeat.x = currentFrame.width / currentTextureImage.width;
+        this.currentMaterial.map.repeat.y = currentFrame.height / currentTextureImage.height;
 
         this.currentMaterial.map.center.x = 0;
         this.currentMaterial.map.center.y = 1;
@@ -255,8 +274,14 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
     instanceProto.tick = function () {
         const dt = this.runtime.getDt(this.inst);
-        this.updateGeometry();
-        this.updatePivot();
+        const isVisible = this.inst.visible;
+
+        this.pivot.visible = isVisible;
+
+        if (isVisible) {
+            this.updateGeometry();
+            this.updatePivot();
+        }
     };
 
     // The comments around these functions ensure they are removed when exporting, since the
