@@ -68,12 +68,17 @@ AddExpression(2, ef_return_number, "Rotation Z", "Transform", "RotationZ", "The 
 ACESDone();
 
 var property_list = [
-	/*0*/ new cr.Property(ept_integer, "Elevation", 0, "How height is this sprite elevated from ground in 2D pixels."),
-	/*1*/ new cr.Property(ept_float, "Rotation X", 0, "Rotation on the X axis in degrees."),
-	/*2*/ new cr.Property(ept_float, "Rotation Z", 0, "Rotation on the Z axis in degrees."),
-	/*3*/ new cr.Property(ept_combo, "Facing Camera", "No", "Make this sprite constantly be oriented towards the camera.", "No|Yes|Only Y Axis"),
+	/* 0*/ new cr.Property(ept_integer, "Elevation", 0, "How height is this sprite elevated from ground in 2D pixels."),
+	/* 1*/ new cr.Property(ept_float, "Rotation X", 0, "Rotation on the X axis in degrees."),
+	/* 2*/ new cr.Property(ept_float, "Rotation Z", 0, "Rotation on the Z axis in degrees."),
+	/* 3*/ new cr.Property(ept_combo, "Facing Camera", "No", "Make this sprite constantly be oriented towards the camera.", "No|Yes|Only Y Axis"),
+
+	/*--*/ new cr.Property(ept_section, "Advanced"),
+	/* 4*/ new cr.Property(ept_combo, "Enable 2D Render", "Disabled", "If whether or not this object's 2D render will happen, disabling it saves a lot of processing power.", "Disabled|Enabled"),
+	/* 5*/ new cr.Property(ept_combo, "Magnification Filter", "Linear", "How the texture is sampled when a texel covers more than one pixel.", "Linear|Nearest"),
+	/* 6*/ new cr.Property(ept_combo, "Minification Filter", "Linear Filter", "How the texture is sampled when a texel covers less than one pixel.", "Nearest Filter|Nearest Mipmap Nearest Filter|Nearest Mipmap Linear Filter|Linear Filter|Linear Mipmap Nearest Filter|Linear Mipmap Linear Filter"),
 ];
-	
+
 // Called by IDE when a new behavior type is to be created
 function CreateIDEBehaviorType()
 {

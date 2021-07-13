@@ -59,6 +59,17 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
         }
     };
 
+    const toMinificationFilter = (filter) => {
+        switch (filter){
+            case 0: return THREE.NearestFilter;
+            case 1: return THREE.NearestMipmapNearestFilter;
+            case 2: return THREE.NearestMipmapLinearFilter;
+            case 3: return THREE.LinearFilter;
+            case 4: return THREE.LinearMipmapNearestFilter;
+            case 5: return THREE.LinearMipmapLinearFilter;
+        }
+    }
+
     const behaviorProto = cr.behaviors.SimpleThree_Sprite.prototype;
 
     /////////////////////////////////////
@@ -105,11 +116,19 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
 
     instanceProto.onCreate = function () {
-        console.log(this.inst);
         this.elevation = this.properties[0];
         this.rotationX = cr.to_radians(this.properties[1]);
         this.rotationZ = cr.to_radians(this.properties[2]);
         this.facingCamera = this.properties[3];
+        this.render2D = this.properties[4] === 1;
+        this.magnificationFilter = this.properties[5] === 0 ? THREE.LinearFilter : THREE.NearestFilter;
+        this.minificationFilter = toMinificationFilter(this.properties[6]);
+
+        console.log({ m: this.magnificationFilter, mprop: this.properties[5], min: this.minificationFilter, minProp: this.properties[6] });
+
+        if(!this.render2D){
+            this.inst.drawGL = this.inst.drawGL_earlyZPass = this.inst.draw = () => {};
+        }
 
         this.pivot = new THREE.Group();
         this.simpleThree = this.findSimpleThreeInstance();
@@ -124,11 +143,17 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
 
         if (this.type.allTextures.length === 0) {
             this.type.allTextures = this.inst.type.all_frames.reduce((prev, frame) => {
+                const texture =  new THREE.TextureLoader().load(frame.texture_file);
+                texture.magFilter = this.magnificationFilter;
+                texture.minFilter = this.minificationFilter;
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+
                 return {
                     ...prev,
                     [frame.texture_file]: {
                         name: frame.texture_file,
-                        texture: new THREE.TextureLoader().load(frame.texture_file),
+                        texture,
                     },
                 }
             }, {});
@@ -235,14 +260,14 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
             this.currentMaterial.needsUpdate = true;
         }
 
+        this.currentMaterial.map.center.x = 0;
+        this.currentMaterial.map.center.y = 1;
+
         this.currentMaterial.map.offset.x = currentFrame.offx / currentTextureImage.width;
-        this.currentMaterial.map.offset.y = currentFrame.offy / currentTextureImage.height;
+        this.currentMaterial.map.offset.y = 1 - currentFrame.offy / currentTextureImage.height;
 
         this.currentMaterial.map.repeat.x = currentFrame.width / currentTextureImage.width;
         this.currentMaterial.map.repeat.y = currentFrame.height / currentTextureImage.height;
-
-        this.currentMaterial.map.center.x = 0;
-        this.currentMaterial.map.center.y = 1;
     };
 
     instanceProto.getCurrentScale = function () {
