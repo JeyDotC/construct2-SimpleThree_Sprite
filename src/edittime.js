@@ -18,7 +18,7 @@ function GetBehaviorSettings()
 	return {
 		"name":			"SimpleThree Sprite",			// as appears in 'add behavior' dialog, can be changed as long as "id" stays the same
 		"id":			"SimpleThree_Sprite",			// this is used to SimpleThree_Sprite this behavior and is saved to the project; never change it
-		"version":		"1.0",					// (float in x.y format) Behavior version - C2 shows compatibility warnings based on this
+		"version":		"1.1",					// (float in x.y format) Behavior version - C2 shows compatibility warnings based on this
 		"description":	"Converts a sprite in a 3D plane with animations.",
 		"author":		"JeyDotC",
 		"help url":		"https://github.com/JeyDotC/construct2-SimpleThree_Sprite",
