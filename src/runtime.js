@@ -283,6 +283,15 @@ cr.behaviors.SimpleThree_Sprite = function (runtime) {
         // called when associated object is being destroyed
         // note runtime may keep the object and behavior alive after this call for recycling;
         // release, recycle or reset any references here as necessary
+        if(this.mesh !== undefined){
+            this.pivot?.remove(this.mesh);
+        }
+        this.simpleThree?.scene?.remove(this.pivot);
+
+        this.currentGeometry = undefined;
+        this.currentGeometry = undefined;
+        this.mesh = undefined;
+        this.pivot = undefined;
     };
 
     // called when saving the full state of the game
